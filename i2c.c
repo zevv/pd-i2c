@@ -1,8 +1,12 @@
 #include <fcntl.h>
 #include <string.h>
+#include <stdio.h>
 #include <errno.h>
-#include <linux/i2c-dev.h>
-#include "pd/m_pd.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <pd/m_pd.h>
+
+#include "i2c-dev.h"
 
 static t_class *i2c_class;
 
@@ -81,7 +85,7 @@ void *i2c_new(t_symbol *s, int argc, t_atom *argv)
 }
 
 
-void *i2c_del(struct i2c *x)
+void i2c_del(struct i2c *x)
 {
 	if(x->fd != -1) {
 		close(x->fd);
@@ -93,7 +97,7 @@ void i2c_setup(void)
 {
 	i2c_class = class_new(gensym("i2c"), 
 			(t_newmethod)i2c_new, 
-			(t_newmethod)i2c_del, 
+			(t_method)i2c_del, 
 			sizeof(struct i2c), CLASS_DEFAULT, A_GIMME, 0);
 
 	class_addmethod(i2c_class, (t_method)i2c_get, gensym("get"), A_DEFFLOAT, 0);
