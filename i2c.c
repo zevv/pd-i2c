@@ -29,6 +29,13 @@ void i2c_get(struct i2c *x, t_float reg)
 	}
 
 	int val = i2c_smbus_read_byte_data(x->fd, reg);
+	//post("got val:%i",val);
+	//outlet_float(x->f_out, val);
+	t_atom rlist[2];
+	SETFLOAT(&rlist[0],reg);
+	SETFLOAT(&rlist[1],val);
+	outlet_list(x->f_out,&s_list, 2, rlist);
+	
 	if(val == -1) {
 		post("i2c get error: %s", strerror(errno));
 		return;
@@ -79,7 +86,7 @@ void *i2c_new(t_symbol *s, int argc, t_atom *argv)
 		post("Missing bus and address argument");
 	}
 
-	x->f_out = outlet_new(&x->x_obj, &s_float);
+	x->f_out = outlet_new(&x->x_obj, &s_list);
 
 	return (void *)x;
 }
